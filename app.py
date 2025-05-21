@@ -69,6 +69,14 @@ def signal_for_symbol(symbol):
         return jsonify({"symbol": symbol, **signal_info})
     else:
         return jsonify({"symbol": symbol, "signal": None})
+@app.route('/dashboard')
+def dashboard():
+    try:
+        with open("coin_list.txt", "r") as f:
+            symbols = [line.strip().upper() for line in f if line.strip()]
+        return render_template("dashboard.html", symbols=symbols)
+    except:
+        return "Không thể load danh sách coin"
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
