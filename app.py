@@ -10,15 +10,20 @@ import json
 import requests
 import logging
 from datetime import datetime, timedelta
+from werkzeug.exceptions import HTTPException
 
 app = Flask(__name__)
 load_valid_bitget_symbols()
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    logging.error(f"⚠️ Exception: {str(e)}")
-    send_telegram_message(f"🚨 Lỗi hệ thống: <code>{str(e)}</code>")
-    return f"Lỗi: {str(e)}", 500
+    if isinstance(e, HTTPException) and e.code == 404:
+        logging.warning(f"⚠️ 404 Not Found: {str(e)}")
+        return "Không tìm thấy trang yêu cầu (404)", 404
+    else:
+        logging.error(f"⚠️ Exception: {str(e)}")
+        send_telegram_message(f"🚨 Lỗi hệ thống: <code>{str(e)}</code>")
+        return f"Lỗi: {str(e)}", 500
 
 def delete_old_logs():
     try:
