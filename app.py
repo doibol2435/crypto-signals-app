@@ -1,3 +1,4 @@
+# === app.py ===
 from flask import Flask, render_template, jsonify
 from signal_utils import (
     fetch_price_data, calculate_williams_r, calculate_atr,
@@ -43,6 +44,13 @@ def view_logs():
             return f"<pre>{f.read()[-4000:]}</pre>"
     except:
         return "Không thể đọc signals.log"
+
+@app.route('/price/<symbol>')
+def check_price(symbol):
+    price = get_bitget_price(symbol)
+    if price is None:
+        return jsonify({"symbol": symbol, "price": None, "error": "Không lấy được giá"})
+    return jsonify({"symbol": symbol, "price": price})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
