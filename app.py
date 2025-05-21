@@ -35,7 +35,7 @@ delete_old_logs()
 
 @app.route('/')
 def index():
-    return "Crypto Signals App is running"
+    return "🚀 Crypto Signals App is running"
 
 @app.route('/logs')
 def view_logs():
@@ -51,6 +51,19 @@ def check_price(symbol):
     if price is None:
         return jsonify({"symbol": symbol, "price": None, "error": "Không lấy được giá"})
     return jsonify({"symbol": symbol, "price": price})
+
+@app.route('/signal/<symbol>')
+def signal_for_symbol(symbol):
+    df = fetch_price_data(symbol)
+    if df is None or df.empty:
+        return jsonify({"symbol": symbol, "signal": None, "error": "Không lấy được dữ liệu"})
+    df = calculate_williams_r(df)
+    df = calculate_atr(df)
+    signal_info = generate_signal(df)
+    if signal_info:
+        return jsonify({"symbol": symbol, **signal_info})
+    else:
+        return jsonify({"symbol": symbol, "signal": None})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
