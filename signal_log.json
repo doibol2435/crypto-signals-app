@@ -1,0 +1,82 @@
+[
+  {
+    "symbol": "COWUSDT",
+    "signal": "SELL",
+    "entry": 0.4173,
+    "tp1": 0.4055,
+    "tp2": 0.3938,
+    "sl": 0.4252,
+    "wr": -3.55,
+    "chart": "/static/COWUSDT.html"
+  },
+  {
+    "symbol": "LINKUSDT",
+    "signal": "SELL",
+    "entry": 16.2,
+    "tp1": 15.8507,
+    "tp2": 15.5014,
+    "sl": 16.4329,
+    "wr": -1.45,
+    "chart": "/static/LINKUSDT.html"
+  },
+  {
+    "signal": "SELL",
+    "entry": 0.2004,
+    "tp1": 0.1878,
+    "tp2": 0.1753,
+    "sl": 0.2088,
+    "wr": -1.12,
+    "chart": "/static/COOKIEUSDT.html",
+    "symbol": "COOKIEUSDT"
+  },
+  {
+    "signal": "SELL",
+    "entry": 1.058,
+    "tp1": 1.0175,
+    "tp2": 0.977,
+    "sl": 1.085,
+    "wr": -0.99,
+    "chart": "/static/WIFUSDT.html",
+    "symbol": "WIFUSDT"
+  },
+  {
+    "signal": "BUY",
+    "entry": 252.23,
+    "tp1": 257.03,
+    "tp2": 261.83,
+    "sl": 249.03,
+    "wr": -95.44,
+    "chart": "/static/AAVEUSDT.html",
+    "symbol": "AAVEUSDT"
+  },
+  {
+    "signal": "SELL",
+    "entry": 1.162,
+    "tp1": 1.1288,
+    "tp2": 1.0956,
+    "sl": 1.1841,
+    "wr": -4.62,
+    "chart": "/static/WLDUSDT.html",
+    "symbol": "WLDUSDT"
+  },
+  {
+    "signal": "BUY",
+    "entry": 0.4157,
+    "tp1": 0.4412,
+    "tp2": 0.4667,
+    "sl": 0.3987,
+    "wr": -95.42,
+    "chart": "/static/OMUSDT.html",
+    "symbol": "OMUSDT"
+  },
+  {
+    "signal": "SELL",
+    "entry": 0.2376,
+    "tp1": 0.2333,
+    "tp2": 0.2291,
+    "sl": 0.2404,
+    "wr": -1.18,
+    "chart": "/static/POLUSDT.html",
+    "symbol": "POLUSDT"
+  }
+]

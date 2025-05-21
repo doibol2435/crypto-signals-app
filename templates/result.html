@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tín hiệu Williams %R</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      padding: 20px;
+      color: #333;
+    }
+
+    h2 {
+      color: #1e88e5;
+      margin-bottom: 5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f1f3f4;
+      font-weight: bold;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    .positive {
+      color: green;
+      font-weight: bold;
+    }
+
+    .negative {
+      color: red;
+      font-weight: bold;
+    }
+
+    canvas {
+      display: block;
+      margin: auto;
+    }
+
+    .box-green {
+      background-color: #e0f7e9;
+    }
+
+    .box-red {
+      background-color: #ffe0e0;
+    }
+
+    #info-panel {
+      font-size: 14px;
+      color: #444;
+      margin-bottom: 10px;
+    }
+
+    #countdown {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🔥 Tín hiệu mới</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Coin</th><th>%R</th><th>Tín hiệu</th>
+        <th>Entry</th><th>TP1</th><th>TP2</th><th>SL</th><th>Biểu đồ</th>
+      </tr>
+    </thead>
+    <tbody id="new-signal-body">
+      {% for row in results %}
+      <tr>
+        <td>{{ row.symbol }}</td>
+        <td>{{ row.wr }}</td>
+        <td><b>{{ row.signal }}</b></td>
+        <td>{{ row.entry }}</td>
+        <td>{{ row.tp1 }}</td>
+        <td>{{ row.tp2 }}</td>
+        <td>{{ row.sl }}</td>
+        <td>{% if row.chart %}<a href="{{ row.chart }}" target="_blank">Xem</a>{% else %}-{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>📈 Tín hiệu đang theo dõi</h2>
+  <div id="info-panel">
+    🕒 Bây giờ: <span id="current-time"></span><br>
+    🔁 Cập nhật sau: <span id="countdown">60</span> giây<br>
+    ✅ Lần cập nhật gần nhất: <span id="last-update">chưa cập nhật</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Coin</th><th>Tín hiệu</th><th>Entry</th>
+        <th>TP1</th><th>TP2</th><th>SL</th><th>PnL (%)</th><th>Biểu đồ mini</th>
+      </tr>
+    </thead>
+    <tbody id="tracking-body"></tbody>
+  </table>
+
+<script>
+function loadTracking() {
+  fetch('/api/tracking')
+    .then(res => res.json())
+    .then(data => {
+      const body = document.getElementById("tracking-body");
+      body.innerHTML = "";
+
+      data.forEach(row => {
+        const pct = row.pct_change || "...";
+        const tr = document.createElement("tr");
+
+        if (pct.includes('+')) tr.classList.add("box-green");
+        else if (pct.includes('-')) tr.classList.add("box-red");
+
+        tr.innerHTML = `
+          <td>${row.symbol}</td>
+          <td>${row.signal}</td>
+          <td>${row.entry}</td>
+          <td>${row.tp1}</td>
+          <td>${row.tp2}</td>
+          <td>${row.sl}</td>
+          <td class="${pct.includes('+') ? 'positive' : 'negative'}">${pct}</td>
+        `;
+
+        const chartTd = document.createElement("td");
+        const canvas = document.createElement("canvas");
+        canvas.width = 100; canvas.height = 40;
+        chartTd.appendChild(canvas);
+        tr.appendChild(chartTd);
+        body.appendChild(tr);
+
+        fetch(`/api/sparkline/${row.symbol}`)
+          .then(r => r.json())
+          .then(data => {
+            const ctx = canvas.getContext("2d");
+            if (data.length > 0) {
+              const min = Math.min(...data), max = Math.max(...data);
+              ctx.beginPath();
+              data.forEach((val, i) => {
+                const x = i / (data.length - 1) * canvas.width;
+                const y = canvas.height - ((val - min) / (max - min)) * canvas.height;
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+              });
+              ctx.strokeStyle = "#1e88e5";
+              ctx.lineWidth = 1.5;
+              ctx.stroke();
+            }
+          });
+      });
+
+      document.getElementById("last-update").innerText = new Date().toLocaleTimeString();
+    });
+}
+
+function loadNewSignals() {
+  fetch('/api/new_signals')
+    .then(res => res.json())
+    .then(data => {
+      const body = document.getElementById("new-signal-body");
+      body.innerHTML = "";
+
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.symbol}</td>
+          <td>${row.wr}</td>
+          <td><b>${row.signal}</b></td>
+          <td>${row.entry}</td>
+          <td>${row.tp1}</td>
+          <td>${row.tp2}</td>
+          <td>${row.sl}</td>
+          <td><a href="/static/${row.symbol}.html" target="_blank">Xem</a></td>
+        `;
+        body.appendChild(tr);
+      });
+    });
+}
+
+function updateClock() {
+  document.getElementById("current-time").innerText = new Date().toLocaleTimeString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+let countdown = 60;
+const countdownEl = document.getElementById("countdown");
+
+setInterval(() => {
+  countdown--;
+  if (countdown <= 0) {
+    countdown = 60;
+    loadTracking();
+    loadNewSignals();
+  }
+
+  countdownEl.innerText = countdown;
+  countdownEl.style.color = (countdown <= 5) ? "red" : "#333";
+}, 1000);
+
+loadTracking();
+loadNewSignals();
+</script>
+</body>
+</html>

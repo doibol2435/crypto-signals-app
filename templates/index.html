@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crypto %R Scanner</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h2>Phân tích Williams %R</h2>
+    <form method="post">
+        <input type="text" name="symbol" placeholder="VD: BTCUSDT" required>
+        <button type="submit">Phân tích</button>
+    </form>
+    {% if signal %}
+        <p><strong>Kết quả:</strong> {{ signal }}</p>
+    {% endif %}
+</body>
+</html>

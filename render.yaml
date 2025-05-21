@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: crypto-signals-app
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python app.py"
+    plan: free
+
+  - type: worker
+    name: signal-checker
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "watchmedo auto-restart --directory=. --pattern=*.py --recursive -- python check_targets.py"
+    plan: free
